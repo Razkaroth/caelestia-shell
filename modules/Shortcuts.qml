@@ -69,6 +69,19 @@ Scope {
         onPressed: root.launcherInterrupted = true
     }
 
+
+    CustomShortcut {
+        name: "sidebar"
+        description: "Toggle sidebar"
+        onPressed: {
+            // This works even on fullscreen
+            // if (root.hasFullscreen)
+            //     return;
+            const visibilities = Visibilities.getForActive();
+            visibilities.sidebar = !visibilities.sidebar;
+        }
+    }
+
     IpcHandler {
         target: "drawers"
 
