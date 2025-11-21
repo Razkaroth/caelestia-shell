@@ -32,8 +32,9 @@ Scope {
         name: "dashboard"
         description: "Toggle dashboard"
         onPressed: {
-            if (root.hasFullscreen)
-                return;
+            // This works even on fullscreen
+            // if (root.hasFullscreen)
+            //     return;
             const visibilities = Visibilities.getForActive();
             visibilities.dashboard = !visibilities.dashboard;
         }
@@ -80,7 +81,8 @@ Scope {
             const visibilities = Visibilities.getForActive();
             visibilities.sidebar = !visibilities.sidebar;
         }
-    }
+      }
+
 
     IpcHandler {
         target: "drawers"
