@@ -5,6 +5,6 @@ JsonObject {
     property string wallpaperDir: `${Paths.pictures}/Wallpapers`
     property string sessionGif: "root:/assets/kurukuru.gif"
     property string mediaGif: "root:/assets/bongocat.gif"
-    property real gifDuration: 2
-    property int beatsPerLoop: 10
+    property real gifDuration: 2.8
+    property int beatsPerLoop: 4
 }
