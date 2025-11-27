@@ -380,7 +380,7 @@ Item {
             height: visualiser.height * 0.75
 
             playing: Players.active?.isPlaying ?? false
-            speed: Audio.beatTracker.bpm * Conffig.paths.mediaFrames / 60 * Config.paths.beatsPerLoop
+            speed: Audio.beatTracker.bpm * Config.paths.gifDuration / 60 * Config.paths.beatsPerLoop
             source: Paths.absolutePath(Config.paths.mediaGif)
             asynchronous: true
             fillMode: AnimatedImage.PreserveAspectFit
