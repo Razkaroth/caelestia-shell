@@ -382,8 +382,11 @@ Item {
         playing: Players.active?.isPlaying ?? false
         speed: (60 / Audio.beatTracker.bpm) * Config.paths.beatsPerLoop / Config.paths.gifDuration
         source: Paths.absolutePath(Config.paths.mediaGif)
-            asynchronous: true
-            fillMode: AnimatedImage.PreserveAspectFit
+        // playing: Players.active?.isPlaying ?? false
+        // speed: Audio.beatTracker.bpm / Appearance.anim.mediaGifSpeedAdjustment
+        // source: Paths.absolutePath(Config.paths.mediaGif)
+        asynchronous: true
+        fillMode: AnimatedImage.PreserveAspectFit
         }
     }
 
