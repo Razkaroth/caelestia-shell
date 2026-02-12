@@ -212,9 +212,12 @@ Item {
         anchors.bottomMargin: Appearance.padding.large
         anchors.margins: Appearance.padding.large * 2
 
-            playing: Players.active?.isPlaying ?? false
-            speed: (60 / Audio.beatTracker.bpm) * Config.paths.beatsPerLoop / Config.paths.gifDuration
-            source: Paths.absolutePath(Config.paths.mediaGif)
+        playing: Players.active?.isPlaying ?? false
+        speed: (60 / Audio.beatTracker.bpm) * Config.paths.beatsPerLoop / Config.paths.gifDuration
+        source: Paths.absolutePath(Config.paths.mediaGif)
+        // playing: Players.active?.isPlaying ?? false
+        // speed: Audio.beatTracker.bpm / Appearance.anim.mediaGifSpeedAdjustment
+        //
         asynchronous: true
         fillMode: AnimatedImage.PreserveAspectFit
     }
