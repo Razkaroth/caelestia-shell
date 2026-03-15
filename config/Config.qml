@@ -176,7 +176,12 @@ Singleton {
                 occupiedLabel: bar.workspaces.occupiedLabel,
                 activeLabel: bar.workspaces.activeLabel,
                 capitalisation: bar.workspaces.capitalisation,
-                specialWorkspaceIcons: bar.workspaces.specialWorkspaceIcons
+                specialWorkspaceIcons: bar.workspaces.specialWorkspaceIcons,
+                windowIcons: bar.workspaces.windowIcons
+            },
+            activeWindow: {
+                compact: bar.activeWindow.compact,
+                inverted: bar.activeWindow.inverted
             },
             tray: {
                 background: bar.tray.background,
@@ -329,7 +334,8 @@ Singleton {
             vpn: {
                 enabled: utilities.vpn.enabled,
                 provider: utilities.vpn.provider
-            }
+            },
+            quickToggles: utilities.quickToggles
         };
     }
 

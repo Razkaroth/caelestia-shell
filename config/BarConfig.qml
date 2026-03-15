@@ -79,9 +79,16 @@ JsonObject {
         property string activeLabel: "󰮯"
         property string capitalisation: "preserve" // upper, lower, or preserve - relevant only if label is empty
         property list<var> specialWorkspaceIcons: []
+        property list<var> windowIcons: [
+            {
+                regex: "steam(_app_(default|[0-9]+))?",
+                icon: "sports_esports"
+            }
+        ]
     }
 
     component ActiveWindow: JsonObject {
+        property bool compact: false
         property bool inverted: false
     }
 
