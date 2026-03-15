@@ -84,6 +84,17 @@ Scope {
       }
 
 
+    CustomShortcut {
+        name: "utilities"
+        description: "Toggle utilities"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const visibilities = Visibilities.getForActive();
+            visibilities.utilities = !visibilities.utilities;
+        }
+    }
+
     IpcHandler {
         target: "drawers"
 
