@@ -2,17 +2,17 @@ pragma ComponentBehavior: Bound
 
 import ".."
 import "../components"
-import qs.components
-import qs.components.controls
-import qs.components.effects
-import qs.components.containers
-import qs.services
-import qs.config
-import qs.utils
-import Quickshell
-import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Widgets
+import Caelestia.Config
+import qs.components
+import qs.components.containers
+import qs.components.controls
+import qs.components.effects
+import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -22,6 +22,8 @@ Item {
     property bool activeWindowCompact: Config.bar.activeWindow.compact ?? false
     property bool activeWindowInverted: Config.bar.activeWindow.inverted ?? false
     property bool clockShowIcon: Config.bar.clock.showIcon ?? true
+    property bool clockBackground: Config.bar.clock.background ?? false
+    property bool clockShowDate: Config.bar.clock.showDate ?? false
     property bool persistent: Config.bar.persistent ?? true
     property bool showOnHover: Config.bar.showOnHover ?? true
     property int dragThreshold: Config.bar.dragThreshold ?? 20
@@ -41,7 +43,7 @@ Item {
     property bool workspacesOccupiedBg: Config.bar.workspaces.occupiedBg ?? false
     property bool workspacesShowWindows: Config.bar.workspaces.showWindows ?? false
     property int workspacesMaxWindowIcons: Config.bar.workspaces.maxWindowIcons ?? 0
-    property bool workspacesPerMonitor: Config.bar.workspaces.perMonitorWorkspaces ?? true
+    property bool workspacesPerMonitor: GlobalConfig.bar.workspaces.perMonitorWorkspaces ?? true
     property bool scrollWorkspaces: Config.bar.scrollActions.workspaces ?? true
     property bool scrollVolume: Config.bar.scrollActions.volume ?? true
     property bool scrollBrightness: Config.bar.scrollActions.brightness ?? true
@@ -50,6 +52,55 @@ Item {
     property bool popoutStatusIcons: Config.bar.popouts.statusIcons ?? true
     property list<string> monitorNames: Hypr.monitorNames()
     property list<string> excludedScreens: Config.bar.excludedScreens ?? []
+
+    function saveConfig(entryIndex, entryEnabled) {
+        GlobalConfig.bar.activeWindow.compact = root.activeWindowCompact;
+        GlobalConfig.bar.activeWindow.inverted = root.activeWindowInverted;
+        GlobalConfig.bar.clock.background = root.clockBackground;
+        GlobalConfig.bar.clock.showDate = root.clockShowDate;
+        GlobalConfig.bar.clock.showIcon = root.clockShowIcon;
+        GlobalConfig.bar.persistent = root.persistent;
+        GlobalConfig.bar.showOnHover = root.showOnHover;
+        GlobalConfig.bar.dragThreshold = root.dragThreshold;
+        GlobalConfig.bar.status.showAudio = root.showAudio;
+        GlobalConfig.bar.status.showMicrophone = root.showMicrophone;
+        GlobalConfig.bar.status.showKbLayout = root.showKbLayout;
+        GlobalConfig.bar.status.showNetwork = root.showNetwork;
+        GlobalConfig.bar.status.showWifi = root.showWifi;
+        GlobalConfig.bar.status.showBluetooth = root.showBluetooth;
+        GlobalConfig.bar.status.showBattery = root.showBattery;
+        GlobalConfig.bar.status.showLockStatus = root.showLockStatus;
+        GlobalConfig.bar.tray.background = root.trayBackground;
+        GlobalConfig.bar.tray.compact = root.trayCompact;
+        GlobalConfig.bar.tray.recolour = root.trayRecolour;
+        GlobalConfig.bar.workspaces.shown = root.workspacesShown;
+        GlobalConfig.bar.workspaces.activeIndicator = root.workspacesActiveIndicator;
+        GlobalConfig.bar.workspaces.occupiedBg = root.workspacesOccupiedBg;
+        GlobalConfig.bar.workspaces.showWindows = root.workspacesShowWindows;
+        GlobalConfig.bar.workspaces.maxWindowIcons = root.workspacesMaxWindowIcons;
+        GlobalConfig.bar.workspaces.perMonitorWorkspaces = root.workspacesPerMonitor;
+        GlobalConfig.bar.scrollActions.workspaces = root.scrollWorkspaces;
+        GlobalConfig.bar.scrollActions.volume = root.scrollVolume;
+        GlobalConfig.bar.scrollActions.brightness = root.scrollBrightness;
+        GlobalConfig.bar.popouts.activeWindow = root.popoutActiveWindow;
+        GlobalConfig.bar.popouts.tray = root.popoutTray;
+        GlobalConfig.bar.popouts.statusIcons = root.popoutStatusIcons;
+        GlobalConfig.bar.excludedScreens = root.excludedScreens;
+
+        const entries = [];
+        for (let i = 0; i < entriesModel.count; i++) {
+            const entry = entriesModel.get(i);
+            let enabled = entry.enabled;
+            if (entryIndex !== undefined && i === entryIndex) {
+                enabled = entryEnabled;
+            }
+            entries.push({
+                id: entry.id,
+                enabled: enabled
+            });
+        }
+        GlobalConfig.bar.entries = entries;
+    }
 
     anchors.fill: parent
 
@@ -66,64 +117,17 @@ Item {
         }
     }
 
-    function saveConfig(entryIndex, entryEnabled) {
-        Config.bar.activeWindow.compact = root.activeWindowCompact;
-        Config.bar.activeWindow.inverted = root.activeWindowInverted;
-        Config.bar.clock.showIcon = root.clockShowIcon;
-        Config.bar.persistent = root.persistent;
-        Config.bar.showOnHover = root.showOnHover;
-        Config.bar.dragThreshold = root.dragThreshold;
-        Config.bar.status.showAudio = root.showAudio;
-        Config.bar.status.showMicrophone = root.showMicrophone;
-        Config.bar.status.showKbLayout = root.showKbLayout;
-        Config.bar.status.showNetwork = root.showNetwork;
-        Config.bar.status.showWifi = root.showWifi;
-        Config.bar.status.showBluetooth = root.showBluetooth;
-        Config.bar.status.showBattery = root.showBattery;
-        Config.bar.status.showLockStatus = root.showLockStatus;
-        Config.bar.tray.background = root.trayBackground;
-        Config.bar.tray.compact = root.trayCompact;
-        Config.bar.tray.recolour = root.trayRecolour;
-        Config.bar.workspaces.shown = root.workspacesShown;
-        Config.bar.workspaces.activeIndicator = root.workspacesActiveIndicator;
-        Config.bar.workspaces.occupiedBg = root.workspacesOccupiedBg;
-        Config.bar.workspaces.showWindows = root.workspacesShowWindows;
-        Config.bar.workspaces.maxWindowIcons = root.workspacesMaxWindowIcons;
-        Config.bar.workspaces.perMonitorWorkspaces = root.workspacesPerMonitor;
-        Config.bar.scrollActions.workspaces = root.scrollWorkspaces;
-        Config.bar.scrollActions.volume = root.scrollVolume;
-        Config.bar.scrollActions.brightness = root.scrollBrightness;
-        Config.bar.popouts.activeWindow = root.popoutActiveWindow;
-        Config.bar.popouts.tray = root.popoutTray;
-        Config.bar.popouts.statusIcons = root.popoutStatusIcons;
-        Config.bar.excludedScreens = root.excludedScreens;
-
-        const entries = [];
-        for (let i = 0; i < entriesModel.count; i++) {
-            const entry = entriesModel.get(i);
-            let enabled = entry.enabled;
-            if (entryIndex !== undefined && i === entryIndex) {
-                enabled = entryEnabled;
-            }
-            entries.push({
-                id: entry.id,
-                enabled: enabled
-            });
-        }
-        Config.bar.entries = entries;
-        Config.save();
-    }
-
     ListModel {
         id: entriesModel
     }
 
     ClippingRectangle {
         id: taskbarClippingRect
+
         anchors.fill: parent
-        anchors.margins: Appearance.padding.normal
+        anchors.margins: Tokens.padding.normal
         anchors.leftMargin: 0
-        anchors.rightMargin: Appearance.padding.normal
+        anchors.rightMargin: Tokens.padding.normal
 
         radius: taskbarBorder.innerRadius
         color: "transparent"
@@ -132,18 +136,20 @@ Item {
             id: taskbarLoader
 
             anchors.fill: parent
-            anchors.margins: Appearance.padding.large + Appearance.padding.normal
-            anchors.leftMargin: Appearance.padding.large
-            anchors.rightMargin: Appearance.padding.large
+            anchors.margins: Tokens.padding.large + Tokens.padding.normal
+            anchors.leftMargin: Tokens.padding.large
+            anchors.rightMargin: Tokens.padding.large
 
+            asynchronous: true
             sourceComponent: taskbarContentComponent
         }
     }
 
     InnerBorder {
         id: taskbarBorder
+
         leftThickness: 0
-        rightThickness: Appearance.padding.normal
+        rightThickness: Tokens.padding.normal
     }
 
     Component {
@@ -151,6 +157,7 @@ Item {
 
         StyledFlickable {
             id: sidebarFlickable
+
             flickableDirection: Flickable.VerticalFlick
             contentHeight: sidebarLayout.height
 
@@ -160,18 +167,19 @@ Item {
 
             ColumnLayout {
                 id: sidebarLayout
+
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
 
-                spacing: Appearance.spacing.normal
+                spacing: Tokens.spacing.normal
 
                 RowLayout {
-                    spacing: Appearance.spacing.smaller
+                    spacing: Tokens.spacing.smaller
 
                     StyledText {
                         text: qsTr("Taskbar")
-                        font.pointSize: Appearance.font.size.large
+                        font.pointSize: Tokens.font.size.large
                         font.weight: 500
                     }
                 }
@@ -182,7 +190,7 @@ Item {
 
                     StyledText {
                         text: qsTr("Status Icons")
-                        font.pointSize: Appearance.font.size.normal
+                        font.pointSize: Tokens.font.size.normal
                     }
 
                     ConnectedButtonGroup {
@@ -259,14 +267,16 @@ Item {
 
                 RowLayout {
                     id: mainRowLayout
+
                     Layout.fillWidth: true
-                    spacing: Appearance.spacing.normal
+                    spacing: Tokens.spacing.normal
 
                     ColumnLayout {
                         id: leftColumnLayout
+
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                        spacing: Appearance.spacing.normal
+                        spacing: Tokens.spacing.normal
 
                         SectionContainer {
                             Layout.fillWidth: true
@@ -274,13 +284,13 @@ Item {
 
                             StyledText {
                                 text: qsTr("Workspaces")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
                             }
 
                             StyledRect {
                                 Layout.fillWidth: true
-                                implicitHeight: workspacesShownRow.implicitHeight + Appearance.padding.large * 2
-                                radius: Appearance.rounding.normal
+                                implicitHeight: workspacesShownRow.implicitHeight + Tokens.padding.large * 2
+                                radius: Tokens.rounding.normal
                                 color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
 
                                 Behavior on implicitHeight {
@@ -289,11 +299,12 @@ Item {
 
                                 RowLayout {
                                     id: workspacesShownRow
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.margins: Appearance.padding.large
-                                    spacing: Appearance.spacing.normal
+                                    anchors.margins: Tokens.padding.large
+                                    spacing: Tokens.spacing.normal
 
                                     StyledText {
                                         Layout.fillWidth: true
@@ -314,8 +325,8 @@ Item {
 
                             StyledRect {
                                 Layout.fillWidth: true
-                                implicitHeight: workspacesActiveIndicatorRow.implicitHeight + Appearance.padding.large * 2
-                                radius: Appearance.rounding.normal
+                                implicitHeight: workspacesActiveIndicatorRow.implicitHeight + Tokens.padding.large * 2
+                                radius: Tokens.rounding.normal
                                 color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
 
                                 Behavior on implicitHeight {
@@ -324,11 +335,12 @@ Item {
 
                                 RowLayout {
                                     id: workspacesActiveIndicatorRow
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.margins: Appearance.padding.large
-                                    spacing: Appearance.spacing.normal
+                                    anchors.margins: Tokens.padding.large
+                                    spacing: Tokens.spacing.normal
 
                                     StyledText {
                                         Layout.fillWidth: true
@@ -347,8 +359,8 @@ Item {
 
                             StyledRect {
                                 Layout.fillWidth: true
-                                implicitHeight: workspacesOccupiedBgRow.implicitHeight + Appearance.padding.large * 2
-                                radius: Appearance.rounding.normal
+                                implicitHeight: workspacesOccupiedBgRow.implicitHeight + Tokens.padding.large * 2
+                                radius: Tokens.rounding.normal
                                 color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
 
                                 Behavior on implicitHeight {
@@ -357,11 +369,12 @@ Item {
 
                                 RowLayout {
                                     id: workspacesOccupiedBgRow
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.margins: Appearance.padding.large
-                                    spacing: Appearance.spacing.normal
+                                    anchors.margins: Tokens.padding.large
+                                    spacing: Tokens.spacing.normal
 
                                     StyledText {
                                         Layout.fillWidth: true
@@ -380,8 +393,8 @@ Item {
 
                             StyledRect {
                                 Layout.fillWidth: true
-                                implicitHeight: workspacesShowWindowsRow.implicitHeight + Appearance.padding.large * 2
-                                radius: Appearance.rounding.normal
+                                implicitHeight: workspacesShowWindowsRow.implicitHeight + Tokens.padding.large * 2
+                                radius: Tokens.rounding.normal
                                 color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
 
                                 Behavior on implicitHeight {
@@ -390,11 +403,12 @@ Item {
 
                                 RowLayout {
                                     id: workspacesShowWindowsRow
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.margins: Appearance.padding.large
-                                    spacing: Appearance.spacing.normal
+                                    anchors.margins: Tokens.padding.large
+                                    spacing: Tokens.spacing.normal
 
                                     StyledText {
                                         Layout.fillWidth: true
@@ -413,8 +427,8 @@ Item {
 
                             StyledRect {
                                 Layout.fillWidth: true
-                                implicitHeight: workspacesMaxWindowIconsRow.implicitHeight + Appearance.padding.large * 2
-                                radius: Appearance.rounding.normal
+                                implicitHeight: workspacesMaxWindowIconsRow.implicitHeight + Tokens.padding.large * 2
+                                radius: Tokens.rounding.normal
                                 color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
 
                                 Behavior on implicitHeight {
@@ -423,11 +437,12 @@ Item {
 
                                 RowLayout {
                                     id: workspacesMaxWindowIconsRow
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.margins: Appearance.padding.large
-                                    spacing: Appearance.spacing.normal
+                                    anchors.margins: Tokens.padding.large
+                                    spacing: Tokens.spacing.normal
 
                                     StyledText {
                                         Layout.fillWidth: true
@@ -448,8 +463,8 @@ Item {
 
                             StyledRect {
                                 Layout.fillWidth: true
-                                implicitHeight: workspacesPerMonitorRow.implicitHeight + Appearance.padding.large * 2
-                                radius: Appearance.rounding.normal
+                                implicitHeight: workspacesPerMonitorRow.implicitHeight + Tokens.padding.large * 2
+                                radius: Tokens.rounding.normal
                                 color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
 
                                 Behavior on implicitHeight {
@@ -458,11 +473,12 @@ Item {
 
                                 RowLayout {
                                     id: workspacesPerMonitorRow
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.margins: Appearance.padding.large
-                                    spacing: Appearance.spacing.normal
+                                    anchors.margins: Tokens.padding.large
+                                    spacing: Tokens.spacing.normal
 
                                     StyledText {
                                         Layout.fillWidth: true
@@ -486,7 +502,7 @@ Item {
 
                             StyledText {
                                 text: qsTr("Scroll Actions")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
                             }
 
                             ConnectedButtonGroup {
@@ -524,9 +540,10 @@ Item {
 
                     ColumnLayout {
                         id: middleColumnLayout
+
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                        spacing: Appearance.spacing.normal
+                        spacing: Tokens.spacing.normal
 
                         SectionContainer {
                             Layout.fillWidth: true
@@ -534,7 +551,25 @@ Item {
 
                             StyledText {
                                 text: qsTr("Clock")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
+                            }
+
+                            SwitchRow {
+                                label: qsTr("Background")
+                                checked: root.clockBackground
+                                onToggled: checked => {
+                                    root.clockBackground = checked;
+                                    root.saveConfig();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: qsTr("Show date")
+                                checked: root.clockShowDate
+                                onToggled: checked => {
+                                    root.clockShowDate = checked;
+                                    root.saveConfig();
+                                }
                             }
 
                             SwitchRow {
@@ -553,7 +588,7 @@ Item {
 
                             StyledText {
                                 text: qsTr("Bar Behavior")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
                             }
 
                             SwitchRow {
@@ -575,7 +610,7 @@ Item {
                             }
 
                             SectionContainer {
-                                contentSpacing: Appearance.spacing.normal
+                                contentSpacing: Tokens.spacing.normal
 
                                 SliderInput {
                                     Layout.fillWidth: true
@@ -606,7 +641,7 @@ Item {
 
                             StyledText {
                                 text: qsTr("Active window")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
                             }
 
                             SwitchRow {
@@ -631,9 +666,10 @@ Item {
 
                     ColumnLayout {
                         id: rightColumnLayout
+
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                        spacing: Appearance.spacing.normal
+                        spacing: Tokens.spacing.normal
 
                         SectionContainer {
                             Layout.fillWidth: true
@@ -641,7 +677,7 @@ Item {
 
                             StyledText {
                                 text: qsTr("Popouts")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
                             }
 
                             SwitchRow {
@@ -678,7 +714,7 @@ Item {
 
                             StyledText {
                                 text: qsTr("Tray Settings")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
                             }
 
                             ConnectedButtonGroup {
@@ -719,7 +755,7 @@ Item {
 
                             StyledText {
                                 text: qsTr("Monitors")
-                                font.pointSize: Appearance.font.size.normal
+                                font.pointSize: Tokens.font.size.normal
                             }
 
                             ConnectedButtonGroup {
